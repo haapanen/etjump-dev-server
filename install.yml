@@ -1,0 +1,44 @@
+---
+- name: Install ET server
+  hosts: all
+  become: true
+  vars_files:
+    - install_vars.yml
+
+  tasks:
+    - name: Configure ET server
+      template:
+        src: server.service.j2
+        dest: /etc/systemd/system/{{ service_name }}.service
+      notify:
+        - Reload systemd
+
+    - name: Open UDP port
+      ufw:
+        rule: allow
+        port: "{{ port }}"
+        proto: udp
+
+    - name: Start ET server
+      service:
+        name: "{{ service_name }}"
+        state: started
+        enabled: true
+
+    - name: Install ET restarter script
+      template:
+        src: restarter.sh.j2
+        dest: "{{ home_path }}/restarter.sh"
+        mode: 0755
+
+    - name: Configure the restarter to run every minute
+      cron:
+        name: "{{ restarter_name }}"
+        minute: "*"
+        job: cd {{ home_path }} && "{{ home_path }}/restarter.sh"
+    
+      
+  handlers:
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes

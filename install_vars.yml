@@ -1,0 +1,15 @@
+# server
+service_name: et-27960
+port: 27960
+working_directory: /path/to/et/main/ # should contain etmain etc. directories
+user: user # user to run the server as
+group: group # group to run the server as
+etlded_path: /path/to/etlegacy-v2.78.1-i386/etlded 
+base_path: /path/to/et/main/
+home_path: /path/to/et/main/et-27960
+config_name: server.cfg
+pid_file: /path/to/et/main/main.pid
+mod_directory: etjump_latest # or etjump
+
+# restarter
+restarter_name: et-27960-restarter

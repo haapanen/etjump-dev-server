@@ -1,0 +1,16 @@
+[Unit]
+Description={{ service_name }}
+After=network.target
+
+[Service]
+WorkingDirectory={{ working_directory }}
+User={{ user }}
+Group={{ group }}
+Type=simple
+ExecStart={{ etlded_path }} +set fs_game {{ mod_directory }} +set cm_optimizePatchPlanes 1 +set net_port {{ port }} +set fs_basepath {{ base_path }} +set fs_homepath {{ home_path }} +exec {{ config_name }}
+PIDFile={{ pid_file }}
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

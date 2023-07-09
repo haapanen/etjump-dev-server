@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Define the file path to store the download url
+FILEPATH=./latest_version_url.txt
+
+# Define the directory to unzip the downloaded file to
+UNZIP_DIR={{ mod_directory }}
+
+# Fetch the latest release from the etjump repository on GitHub
+LATEST_URL=$(curl -s https://api.github.com/repos/etjump/etjump/releases/latest | jq -r '.assets[0].browser_download_url')
+
+# Check if the latest url is different from the previous url
+if [ "$LATEST_URL" != "$(cat $FILEPATH)" ]; then
+    # Save the latest url to the file
+    echo "$LATEST_URL" > $FILEPATH
+    
+    # Download the file and unzip it
+    curl -L "$LATEST_URL" -o ./etjump.zip
+
+    # stop the server
+    systemctl stop {{ service_name }}
+
+    # remove the old files
+    rm $UNZIP_DIR/*.pk3
+    rm $UNZIP_DIR/*.so
+    rm $UNZIP_DIR/*.dll
+    rm $UNZIP_DIR/qagame_mac
+
+    # unzip the file
+    unzip -j etjump.zip "etjump/*" -d $UNZIP_DIR
+
+    chown -R {{ user }}:{{ user }} $UNZIP_DIR
+
+    # remove the zip file
+    rm ./etjump.zip
+
+    # start the server
+    systemctl start {{ service_name }}
+else
+    echo "No new release found"
+fi
