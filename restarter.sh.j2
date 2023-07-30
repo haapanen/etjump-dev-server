@@ -10,7 +10,7 @@ UNZIP_DIR={{ mod_directory }}
 LATEST_URL=$(curl -s https://api.github.com/repos/etjump/etjump/releases/latest | jq -r '.assets[0].browser_download_url')
 
 # Check if the latest url is different from the previous url
-if [ "$LATEST_URL" != "$(cat $FILEPATH)" ]; then
+if [ "$LATEST_URL" != "$(cat $FILEPATH)" ] && [ "$LATEST_URL" != "null" ]; then
     # Save the latest url to the file
     echo "$LATEST_URL" > $FILEPATH
     
